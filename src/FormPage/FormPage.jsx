@@ -25,7 +25,7 @@ class FormPage extends React.Component {
       title: "",
       firstname: "",
       lastname: "",
-      hobbies: "",
+      hobbies: { value: "", error: false },
       add: { values: [], error: false },
       comments: "",
       email: {
@@ -43,6 +43,11 @@ class FormPage extends React.Component {
   }
   handleChange = field => {
     return event => {
+      if (field === "hobbies") {
+        this.setState({
+          hobbies: { value: event.target.value, ...this.state.hobbies }
+        });
+      }
       this.setState({ [field]: event.target.value }, () => {
         console.log(this.state[field]);
       });
@@ -66,15 +71,19 @@ class FormPage extends React.Component {
   };
   handleSubmit = event => {
     event.preventDefault();
-    const { email, phone, zip, add } = this.state;
+    const { email, phone, zip, add, hobbies } = this.state;
     if (add.length === 0) {
       this.setState({ add: { ...this.state.add, error: true } });
+    }
+    if (hobbies.value.length === 0) {
+      this.setState({ hobbies: { error: true, ...this.state.hobbies } });
     }
     if (
       !email.error &&
       !phone.error &&
       !zip.error &&
       !add.error &&
+      hobbies.value.length > 0 &&
       add.values.length > 0
     ) {
       alert("success");
@@ -220,9 +229,11 @@ class FormPage extends React.Component {
               />
               <Grid item>
                 <FormControl variant="outlined" fullWidth required>
-                  <InputLabel>Hobbies</InputLabel>
+                  <InputLabel error={this.state.hobbies.error}>
+                    Hobbies
+                  </InputLabel>
                   <Select
-                    value={this.state.hobbies}
+                    value={this.state.hobbies.value}
                     onChange={this.handleChange("hobbies")}
                   >
                     <MenuItem value="Cricket">Cricket</MenuItem>
